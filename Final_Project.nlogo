@@ -3,7 +3,9 @@ breed [infected-humans infected-human]
 breed [immune-humans immune-humane]
 breed [shelters shelter]
 breed [trees tree]
-;breed [walls wall]
+breed [clouds cloud]
+
+
 
 globals [
   current-humans-number
@@ -11,9 +13,9 @@ globals [
   die-threashold
   new-threashold
   create-one-human-flag
-  rain-power
   random-patch
   tree-number
+  rain-flag
 ]
 
 
@@ -27,10 +29,21 @@ to setup
   set die-threashold die-probability-infected-humans
   set new-threashold new-probability-humans
   set create-one-human-flag false
-  set tree-number 50
+  set tree-number 100
   set random-patch one-of turtles
+  set rain-flag false
+
   let index 0
 
+  ;ask patches [
+    ;set pcolor scale-color brown 1 -1000 900
+  ;]
+
+
+  ask patches
+  [
+    if pcolor != green [set pcolor grey]
+  ]
   while [index < number-of-shelters]
   [
 
@@ -39,6 +52,8 @@ to setup
       set shape "house"
       set xcor random-xcor
       set ycor random-ycor
+      ;set xcor 5
+      ;set ycor -10
       set size 3
     ]
     set index (index + 1)
@@ -80,28 +95,34 @@ to setup
     set ycor -9
   ]
 
-  ;ask patches with [pxcor >= -16 and pycor = 16 ] [
-    ;set pcolor brown
-  ;]
-  ;ask patches with [pxcor = 16 and pycor < 16 ] [
-    ;set pcolor brown
-  ;]
-  ;ask patches with [pxcor >= -16 and pycor = -16 ] [
-    ;set pcolor brown
-  ;]
-  ;ask patches with [pxcor = -16 and pycor >= -16 ] [
-    ;set pcolor brown
-  ;]
 
 end
 
-to rain-behaviour
+to create-rain
   ifelse rain
-  [ ;set random-patch one-of patches
-    ;ask random-patch [ set pcolor blue ]
+  [
+    let shelter_tmp one-of shelters
+
+
+    if rain-flag = false [
+      create-clouds rain-power [
+        set shape "cloud"
+        set xcor random-xcor
+        set ycor random-ycor
+        ;set xcor 5
+        ;set ycor -8
+        set color blue
+        set size 4
+      ]
+      set rain-flag true
+    ]
 
   ]
   [ ;ask patches [ set pcolor white ]
+    set rain-flag false
+    ask clouds [
+      die
+    ]
   ]
 end
 
@@ -160,10 +181,13 @@ to human-behaviour
   let current-human self
   let closest-human min-one-of other humans [distance current-human]
   let closest-infected-human min-one-of other infected-humans [distance current-human]
+  let closest-cloud min-one-of other clouds [distance current-human]
+
+
   ;print closest-human
   ;print closest-infected-human
 
-  if current-humans-number > 1 and current-infected-humans-number > 1 [
+  if current-humans-number >= 1 and current-infected-humans-number >= 1 [
     if ((closest-infected-human != nobody) and (closest-human != nobody)) [ ; da controllare questa condizione
       if current-infected-humans-number > 1 [
         ask current-human [
@@ -176,6 +200,24 @@ to human-behaviour
       ]
     ]
   ]
+
+  if current-humans-number >= 1 and closest-cloud != nobody [
+
+    let closest-shelter min-one-of other shelters [distance current-human]
+    let distance-shelter-cloud [distance closest-shelter] of closest-cloud
+    ;print distance-shelter-cloud
+
+    if distance closest-cloud < 2 and distance-shelter-cloud > 3 [
+      ask current-human [
+        set breed infected-humans
+        set current-humans-number ( current-humans-number - 1 )
+        set current-infected-humans-number ( current-infected-humans-number + 1)
+        set color black
+        set shape "person"
+      ]
+    ]
+  ]
+
   ifelse rain
   [
     let closest-shelter min-one-of other shelters [distance current-human]
@@ -233,7 +275,7 @@ to infected-human-behaviour ; behaviour of infected humans
 
   if distance closest-shelter < 3 [
     ask current-infected-human [
-      print "sono vicino"
+
       right 180
     ]
   ]
@@ -268,7 +310,7 @@ to simulation
   move-infected-humans ; function which describes moves of infected humans
   move-immune-humans ; function which describes moves of immune humans
   check-create-human-flag ; function which checks if is the caso to create a new human or not
-  rain-behaviour ; switch button to regulates rain
+  create-rain ; switch button to regulates rain
 
 end
 @#$#@#$#@
@@ -308,7 +350,7 @@ number-of-humans
 number-of-humans
 0
 100
-0.0
+98.0
 1
 1
 NIL
@@ -357,7 +399,7 @@ number-of-infected-humans
 number-of-infected-humans
 0
 100
-1.0
+0.0
 1
 1
 NIL
@@ -389,7 +431,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 1
-0.0
+0.1
 0.05
 1
 NIL
@@ -419,7 +461,7 @@ number-of-immune-humans
 number-of-immune-humans
 0
 10
-1.0
+0.0
 1
 1
 NIL
@@ -446,6 +488,21 @@ number-of-shelters
 0
 5
 2.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+264
+79
+436
+112
+rain-power
+rain-power
+0
+5
+5.0
 1
 1
 NIL
@@ -554,6 +611,15 @@ false
 0
 Circle -7500403 true true 0 0 300
 Circle -16777216 true false 30 30 240
+
+cloud
+false
+0
+Circle -7500403 true true 13 118 94
+Circle -7500403 true true 86 101 127
+Circle -7500403 true true 51 51 108
+Circle -7500403 true true 118 43 95
+Circle -7500403 true true 158 68 134
 
 cow
 false
