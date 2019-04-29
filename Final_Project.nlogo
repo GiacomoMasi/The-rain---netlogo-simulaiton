@@ -20,8 +20,9 @@ globals [
 
 
 
-to setup
+to setup ;setup function
   clear-all
+
   ask patches [set pcolor white]
 
   set current-humans-number number-of-humans
@@ -34,10 +35,6 @@ to setup
   set rain-flag false
 
   let index 0
-
-  ;ask patches [
-    ;set pcolor scale-color brown 1 -1000 900
-  ;]
 
 
   ask patches
@@ -99,18 +96,14 @@ to setup
 end
 
 to create-rain
-  ifelse rain
+  ifelse rain ; if the switch button is turn on, create clouds. Else ask clouds to die
   [
-    let shelter_tmp one-of shelters
-
 
     if rain-flag = false [
       create-clouds rain-power [
         set shape "cloud"
         set xcor random-xcor
         set ycor random-ycor
-        ;set xcor 5
-        ;set ycor -8
         set color blue
         set size 4
       ]
@@ -118,7 +111,7 @@ to create-rain
     ]
 
   ]
-  [ ;ask patches [ set pcolor white ]
+  [
     set rain-flag false
     ask clouds [
       die
@@ -126,7 +119,7 @@ to create-rain
   ]
 end
 
-to create-one-human
+to create-one-human ; create new human
   if random-float 1 < new-threashold [
     create-humans 1 [
       set current-humans-number ( current-humans-number + 1 )
@@ -144,7 +137,7 @@ to check-create-human-flag
   ]
 end
 
-to move-immune-humans
+to move-immune-humans ; immune human's move
 
   ask immune-humans [
     let dice random 3
@@ -155,7 +148,7 @@ to move-immune-humans
 
 end
 
-to move-humans
+to move-humans ; human's move
 
   ask humans [
     let dice random 3
@@ -275,7 +268,6 @@ to infected-human-behaviour ; behaviour of infected humans
 
   if distance closest-shelter < 3 [
     ask current-infected-human [
-
       right 180
     ]
   ]
@@ -283,15 +275,27 @@ to infected-human-behaviour ; behaviour of infected humans
 
 
   if current-humans-number > 0 [
-    ask current-infected-human [
-      face closest-human
+    let closest-human-shelter min-one-of other shelters [distance closest-human]
+    ;print closest-human-shelter
+    let distance-shelter-human [distance closest-human-shelter] of closest-human
+
+
+    ifelse distance-shelter-human >= 3 [
+      ask current-infected-human [
+        face closest-human
+      ]
+      ask humans with [ distance current-infected-human < 1 ] [
+        set current-humans-number ( current-humans-number - 1 )
+        set current-infected-humans-number ( current-infected-humans-number + 1)
+        set breed infected-humans
+        set color black
+        set shape "person"
+      ]
     ]
-    ask humans with [ distance current-infected-human < 1 ] [
-      set current-humans-number ( current-humans-number - 1 )
-      set current-infected-humans-number ( current-infected-humans-number + 1)
-      set breed infected-humans
-      set color black
-      set shape "person"
+    [
+     ask current-infected-human [
+        face one-of patches
+      ]
     ]
   ]
 
@@ -350,7 +354,7 @@ number-of-humans
 number-of-humans
 0
 100
-98.0
+50.0
 1
 1
 NIL
@@ -431,7 +435,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 1
-0.1
+0.05
 0.05
 1
 NIL
@@ -446,7 +450,7 @@ new-probability-humans
 new-probability-humans
 0
 1
-0.0
+0.05
 0.05
 1
 NIL
@@ -461,7 +465,7 @@ number-of-immune-humans
 number-of-immune-humans
 0
 10
-0.0
+1.0
 1
 1
 NIL
@@ -487,7 +491,7 @@ number-of-shelters
 number-of-shelters
 0
 5
-2.0
+3.0
 1
 1
 NIL
@@ -502,7 +506,7 @@ rain-power
 rain-power
 0
 5
-5.0
+2.0
 1
 1
 NIL
