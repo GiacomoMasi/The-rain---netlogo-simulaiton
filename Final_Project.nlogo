@@ -137,6 +137,27 @@ to check-create-human-flag
   ]
 end
 
+to immune-humans-behaviour
+  let current-immune-human self
+
+  if current-infected-humans-number > 0 [
+    let closest-infected-human min-one-of other infected-humans [distance current-immune-human]
+
+    if distance closest-infected-human < 0.5 [
+      if random-float 1 < safe-threashold [
+        ask closest-infected-human [
+          set breed humans
+          set current-humans-number ( current-humans-number + 1 )
+          set current-infected-humans-number ( current-infected-humans-number - 1)
+          set color blue
+          set shape "person"
+        ]
+      ]
+    ]
+  ]
+
+end
+
 to move-immune-humans ; immune human's move
 
   ask immune-humans [
@@ -144,6 +165,10 @@ to move-immune-humans ; immune human's move
     let change ( dice - 1 )
     forward 0.5
     set heading ( heading + change * 2 )
+
+    if number-of-immune-humans > 0 [
+      immune-humans-behaviour
+    ]
   ]
 
 end
@@ -153,13 +178,8 @@ to move-humans ; human's move
   ask humans [
     let dice random 3
     let change ( dice - 1 )
-
-    ;if abs pxcor = max-pxcor
-    ;[ set heading (- heading) ]
-    ;if abs pycor = max-pycor
-    ;[ set heading (90 - heading) ]
     forward 1
-    ;set heading (heading + change * 2)
+    set heading(heading + change * 10)
 
     if current-humans-number > 0 [
       human-behaviour
@@ -177,8 +197,6 @@ to human-behaviour
   let closest-cloud min-one-of other clouds [distance current-human]
 
 
-  ;print closest-human
-  ;print closest-infected-human
 
   if current-humans-number >= 1 and current-infected-humans-number >= 1 [
     if ((closest-infected-human != nobody) and (closest-human != nobody)) [ ; da controllare questa condizione
@@ -216,12 +234,12 @@ to human-behaviour
     let closest-shelter min-one-of other shelters [distance current-human]
     ask current-human [face closest-shelter]
 
-    if distance min-one-of other shelters [distance current-human] > 0 and distance min-one-of other shelters [distance current-human] < 0.5 [
-      ask current-human [
+    ;if distance min-one-of other shelters [distance current-human] > 0 and distance min-one-of other shelters [distance current-human] < 0.5 [
+      ;ask current-human [
         ;print current-human
 
-      ]
-    ]
+      ;]
+    ;]
   ]
   [ ;ask patches [ set pcolor white ]
   ]
@@ -229,17 +247,11 @@ to human-behaviour
 end
 
 to move-infected-humans
-  ;let current-infected-human self
-  ;let closest-human min-one-of other humans [distance current-infected-human]
+
 
   ask infected-humans [
     let dice random 3
     let change ( dice - 1 )
-
-    ;if abs pxcor = max-pxcor
-    ;[ set heading (- heading) ]
-    ;if abs pycor = max-pycor
-    ;[ set heading (180 - heading) ]
 
     forward 1
 
@@ -259,13 +271,6 @@ to infected-human-behaviour ; behaviour of infected humans
   let closest-human min-one-of other humans [distance current-infected-human]
   let closest-shelter min-one-of other shelters [distance current-infected-human]
 
-  ;if distance closest-shelter min-one-of other shelters [distance closest-human] [
-    ;ask current-infected-human [
-      ;print "sono vicino"
-      ;right 180
-    ;]
-  ;]
-
   if distance closest-shelter < 3 [
     ask current-infected-human [
       right 180
@@ -276,7 +281,6 @@ to infected-human-behaviour ; behaviour of infected humans
 
   if current-humans-number > 0 [
     let closest-human-shelter min-one-of other shelters [distance closest-human]
-    ;print closest-human-shelter
     let distance-shelter-human [distance closest-human-shelter] of closest-human
 
 
@@ -354,7 +358,7 @@ number-of-humans
 number-of-humans
 0
 100
-50.0
+0.0
 1
 1
 NIL
@@ -403,7 +407,7 @@ number-of-infected-humans
 number-of-infected-humans
 0
 100
-0.0
+2.0
 1
 1
 NIL
@@ -435,7 +439,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 1
-0.05
+0.0
 0.05
 1
 NIL
@@ -450,7 +454,7 @@ new-probability-humans
 new-probability-humans
 0
 1
-0.05
+0.0
 0.05
 1
 NIL
@@ -491,7 +495,7 @@ number-of-shelters
 number-of-shelters
 0
 5
-3.0
+5.0
 1
 1
 NIL
@@ -506,8 +510,23 @@ rain-power
 rain-power
 0
 5
-2.0
+5.0
 1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+16
+289
+188
+322
+safe-threashold
+safe-threashold
+0
+1
+1.0
+0.1
 1
 NIL
 HORIZONTAL
