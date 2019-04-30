@@ -49,8 +49,6 @@ to setup ;setup function
       set shape "house"
       set xcor random-xcor
       set ycor random-ycor
-      ;set xcor 5
-      ;set ycor -10
       set size 3
     ]
     set index (index + 1)
@@ -142,6 +140,9 @@ to immune-humans-behaviour
 
   if current-infected-humans-number > 0 [
     let closest-infected-human min-one-of other infected-humans [distance current-immune-human]
+    ask current-immune-human [
+      face closest-infected-human
+    ]
 
     if distance closest-infected-human < 0.5 [
       if random-float 1 < safe-threashold [
@@ -199,7 +200,7 @@ to human-behaviour
 
 
   if current-humans-number >= 1 and current-infected-humans-number >= 1 [
-    if ((closest-infected-human != nobody) and (closest-human != nobody)) [ ; da controllare questa condizione
+    if ((closest-infected-human != nobody) and (closest-human != nobody)) [
       if current-infected-humans-number > 1 [
         ask current-human [
           face closest-infected-human
@@ -232,14 +233,9 @@ to human-behaviour
   ifelse rain
   [
     let closest-shelter min-one-of other shelters [distance current-human]
-    ask current-human [face closest-shelter]
-
-    ;if distance min-one-of other shelters [distance current-human] > 0 and distance min-one-of other shelters [distance current-human] < 0.5 [
-      ;ask current-human [
-        ;print current-human
-
-      ;]
-    ;]
+    ask current-human [
+      face closest-shelter
+    ]
   ]
   [ ;ask patches [ set pcolor white ]
   ]
@@ -407,7 +403,7 @@ number-of-infected-humans
 number-of-infected-humans
 0
 100
-2.0
+0.0
 1
 1
 NIL
@@ -495,7 +491,7 @@ number-of-shelters
 number-of-shelters
 0
 5
-5.0
+2.0
 1
 1
 NIL
@@ -510,7 +506,7 @@ rain-power
 rain-power
 0
 5
-5.0
+2.0
 1
 1
 NIL
