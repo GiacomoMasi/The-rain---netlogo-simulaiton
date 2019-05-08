@@ -16,6 +16,7 @@ globals [
   random-patch
   tree-number
   rain-flag
+  max-number-humans
 ]
 
 
@@ -33,6 +34,7 @@ to setup ;setup function
   set tree-number 100
   set random-patch one-of turtles
   set rain-flag false
+  set max-number-humans 150
 
   let index 0
 
@@ -90,7 +92,7 @@ to setup ;setup function
     set ycor -9
   ]
 
-
+  reset-ticks
 end
 
 to create-rain
@@ -118,7 +120,7 @@ to create-rain
 end
 
 to create-one-human ; create new human
-  if random-float 1 < new-threashold [
+  if random-float 100 < new-threashold [ ;controlla condizione come quella degli infected
     create-humans 1 [
       set current-humans-number ( current-humans-number + 1 )
       set color blue
@@ -140,18 +142,21 @@ to immune-humans-behaviour
 
   if current-infected-humans-number > 0 [
     let closest-infected-human min-one-of other infected-humans [distance current-immune-human]
-    ask current-immune-human [
-      face closest-infected-human
-    ]
+    if closest-infected-human != nobody [
+      ask current-immune-human [
+        face closest-infected-human ; check
+      ]
 
-    if distance closest-infected-human < 0.5 [
-      if random-float 1 < safe-threashold [
-        ask closest-infected-human [
-          set breed humans
-          set current-humans-number ( current-humans-number + 1 )
-          set current-infected-humans-number ( current-infected-humans-number - 1)
-          set color blue
-          set shape "person"
+
+      if distance closest-infected-human < 0.5 [
+        if (random-float 100) * 1.8 < (safe-threashold / 2 ) [ ; controlla condizione comequella degli infected
+          ask closest-infected-human [
+            set breed humans
+            set current-humans-number ( current-humans-number + 1 )
+            set current-infected-humans-number ( current-infected-humans-number - 1)
+            set color blue
+            set shape "person"
+          ]
         ]
       ]
     ]
@@ -196,6 +201,7 @@ to human-behaviour
   let closest-human min-one-of other humans [distance current-human]
   let closest-infected-human min-one-of other infected-humans [distance current-human]
   let closest-cloud min-one-of other clouds [distance current-human]
+  let closest-shelter-tmp min-one-of other shelters [distance current-human]
 
 
 
@@ -206,11 +212,14 @@ to human-behaviour
           face closest-infected-human
           right 180 ; turn right 180° -> move in the opposite direction
         ]
-        if distance closest-human < 1 [
-          set create-one-human-flag true
-        ]
       ]
     ]
+  ]
+
+  if current-humans-number > 1 and current-humans-number < max-number-humans and distance closest-shelter-tmp > 3[
+    if distance closest-human < 1 [
+          set create-one-human-flag true
+        ]
   ]
 
   if current-humans-number >= 1 and closest-cloud != nobody [
@@ -300,9 +309,9 @@ to infected-human-behaviour ; behaviour of infected humans
   ]
 
 
-  if random-float 1 < die-threashold [
-    die
+  if ( (random-float 100) * 1.8) < (die-threashold / 2) [ ; controlla condizione per la probabilità
     set current-infected-humans-number ( current-infected-humans-number - 1)
+    die
   ]
 
 end
@@ -315,6 +324,7 @@ to simulation
   move-immune-humans ; function which describes moves of immune humans
   check-create-human-flag ; function which checks if is the caso to create a new human or not
   create-rain ; switch button to regulates rain
+  tick
 
 end
 @#$#@#$#@
@@ -354,7 +364,7 @@ number-of-humans
 number-of-humans
 0
 100
-0.0
+3.0
 1
 1
 NIL
@@ -403,7 +413,7 @@ number-of-infected-humans
 number-of-infected-humans
 0
 100
-0.0
+100.0
 1
 1
 NIL
@@ -429,31 +439,31 @@ NIL
 SLIDER
 15
 188
-238
+261
 221
 die-probability-infected-humans
 die-probability-infected-humans
 0
+100
+40.0
 1
-0.0
-0.05
 1
-NIL
+%
 HORIZONTAL
 
 SLIDER
 16
 243
-196
+214
 276
 new-probability-humans
 new-probability-humans
 0
+100
+30.0
 1
-0.0
-0.05
 1
-NIL
+%
 HORIZONTAL
 
 SLIDER
@@ -465,7 +475,7 @@ number-of-immune-humans
 number-of-immune-humans
 0
 10
-1.0
+0.0
 1
 1
 NIL
@@ -491,7 +501,7 @@ number-of-shelters
 number-of-shelters
 0
 5
-2.0
+1.0
 1
 1
 NIL
@@ -505,8 +515,8 @@ SLIDER
 rain-power
 rain-power
 0
-5
-2.0
+50
+17.0
 1
 1
 NIL
@@ -520,12 +530,43 @@ SLIDER
 safe-threashold
 safe-threashold
 0
+100
+0.0
 1
-1.0
-0.1
 1
-NIL
+%
 HORIZONTAL
+
+PLOT
+1022
+12
+1310
+241
+Stat
+Time
+People
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"humans" 1.0 0 -14070903 true "" "plot current-humans-number"
+"infected" 1.0 0 -16777216 true "" "plot current-infected-humans-number"
+"immune" 1.0 0 -2674135 true "" "plot number-of-immune-humans"
+
+MONITOR
+1144
+257
+1209
+302
+Time
+ticks / 52
+0
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
