@@ -120,11 +120,13 @@ to create-rain
 end
 
 to create-one-human ; create new human
-  if random-float 100 < new-threashold [ ;controlla condizione come quella degli infected
+  if ( (random-float 100) * 1.8 < (new-threashold / 2) )  [ ;controlla condizione come quella degli infected
     create-humans 1 [
       set current-humans-number ( current-humans-number + 1 )
       set color blue
       set shape "person"
+      set xcor random-xcor
+      set ycor random-ycor
     ]
   ]
 end
@@ -318,12 +320,12 @@ end
 
 
 to simulation
-
   move-humans ; function which describes moves of humans
   move-infected-humans ; function which describes moves of infected humans
   move-immune-humans ; function which describes moves of immune humans
   check-create-human-flag ; function which checks if is the caso to create a new human or not
   create-rain ; switch button to regulates rain
+  tick
   tick
 
 end
@@ -475,7 +477,7 @@ number-of-immune-humans
 number-of-immune-humans
 0
 10
-0.0
+2.0
 1
 1
 NIL
@@ -516,7 +518,7 @@ rain-power
 rain-power
 0
 50
-17.0
+50.0
 1
 1
 NIL
@@ -531,7 +533,7 @@ safe-threashold
 safe-threashold
 0
 100
-0.0
+10.0
 1
 1
 %
@@ -564,7 +566,7 @@ MONITOR
 302
 Time
 ticks / 52
-0
+1
 1
 11
 
