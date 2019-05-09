@@ -17,6 +17,7 @@ globals [
   tree-number
   rain-flag
   max-number-humans
+  time
 ]
 
 
@@ -35,6 +36,7 @@ to setup ;setup function
   set random-patch one-of turtles
   set rain-flag false
   set max-number-humans 150
+  set time 0
 
   let index 0
 
@@ -318,6 +320,11 @@ to infected-human-behaviour ; behaviour of infected humans
 
 end
 
+to get-time
+  tick
+  tick
+  set time (time + 1)
+end
 
 to simulation
   move-humans ; function which describes moves of humans
@@ -325,9 +332,7 @@ to simulation
   move-immune-humans ; function which describes moves of immune humans
   check-create-human-flag ; function which checks if is the caso to create a new human or not
   create-rain ; switch button to regulates rain
-  tick
-  tick
-
+  get-time
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -366,7 +371,7 @@ number-of-humans
 number-of-humans
 0
 100
-3.0
+100.0
 1
 1
 NIL
@@ -415,7 +420,7 @@ number-of-infected-humans
 number-of-infected-humans
 0
 100
-100.0
+0.0
 1
 1
 NIL
@@ -447,7 +452,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 100
-40.0
+10.0
 1
 1
 %
@@ -540,10 +545,10 @@ safe-threashold
 HORIZONTAL
 
 PLOT
-1022
-12
-1310
-241
+1017
+86
+1305
+315
 Stat
 Time
 People
@@ -560,12 +565,34 @@ PENS
 "immune" 1.0 0 -2674135 true "" "plot number-of-immune-humans"
 
 MONITOR
-1144
-257
-1209
-302
-Time
-ticks / 52
+1054
+27
+1119
+72
+Hours
+time
+1
+1
+11
+
+MONITOR
+1121
+27
+1185
+72
+Days
+time / 24
+1
+1
+11
+
+MONITOR
+1187
+27
+1251
+72
+Months
+(time / 24 ) / 30
 1
 1
 11
