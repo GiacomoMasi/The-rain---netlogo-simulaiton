@@ -4,6 +4,7 @@ breed [immune-humans immune-humane]
 breed [shelters shelter]
 breed [trees tree]
 breed [clouds cloud]
+breed [stones stone]
 
 
 
@@ -15,6 +16,7 @@ globals [
   create-one-human-flag
   random-patch
   tree-number
+  stone-number
   rain-flag
   max-number-humans
   time
@@ -33,6 +35,7 @@ to setup ;setup function
   set new-threashold new-probability-humans
   set create-one-human-flag false
   set tree-number 100
+  set stone-number 0
   set random-patch one-of turtles
   set rain-flag false
   set max-number-humans 150
@@ -43,13 +46,14 @@ to setup ;setup function
 
   ask patches
   [
-    if pcolor != green [set pcolor grey]
+    set pcolor grey
   ]
+
   while [index < number-of-shelters]
   [
 
     create-shelters 1 [
-      set color brown
+      set color 36
       set shape "house"
       set xcor random-xcor
       set ycor random-ycor
@@ -66,6 +70,21 @@ to setup ;setup function
     create-trees 1 [
       set color green
       set shape "tree"
+      set xcor random-xcor
+      set ycor random-ycor
+      set size 1
+    ]
+    set index (index + 1)
+  ]
+
+  set index 0
+
+  while [index < stone-number]
+  [
+
+    create-stones 1 [
+      set color brown
+      set shape "tile stones"
       set xcor random-xcor
       set ycor random-ycor
       set size 1
@@ -122,7 +141,7 @@ to create-rain
 end
 
 to create-one-human ; create new human
-  if ( (random-float 100) * 1.8 < (new-threashold / 2) )  [ ;controlla condizione come quella degli infected
+  if ( (random-float 100) * 1.8 < (new-threashold / 2) )  [ ;check condition
     create-humans 1 [
       set current-humans-number ( current-humans-number + 1 )
       set color blue
@@ -153,7 +172,7 @@ to immune-humans-behaviour
 
 
       if distance closest-infected-human < 0.5 [
-        if (random-float 100) * 1.8 < (safe-threashold / 2 ) [ ; controlla condizione comequella degli infected
+        if (random-float 100) * 1.8 < (safe-threashold / 2 ) [ ; check condition
           ask closest-infected-human [
             set breed humans
             set current-humans-number ( current-humans-number + 1 )
@@ -230,7 +249,6 @@ to human-behaviour
 
     let closest-shelter min-one-of other shelters [distance current-human]
     let distance-shelter-cloud [distance closest-shelter] of closest-cloud
-    ;print distance-shelter-cloud
 
     if distance closest-cloud < 2 and distance-shelter-cloud > 3 [
       ask current-human [
@@ -313,14 +331,14 @@ to infected-human-behaviour ; behaviour of infected humans
   ]
 
 
-  if ( (random-float 100) * 1.8) < (die-threashold / 2) [ ; controlla condizione per la probabilità
+  if ( (random-float 100) * 1.8) < (die-threashold / 2) [ ; check condition
     set current-infected-humans-number ( current-infected-humans-number - 1)
     die
   ]
 
 end
 
-to get-time
+to set-time
   tick
   tick
   set time (time + 1)
@@ -332,7 +350,7 @@ to simulation
   move-immune-humans ; function which describes moves of immune humans
   check-create-human-flag ; function which checks if is the caso to create a new human or not
   create-rain ; switch button to regulates rain
-  get-time
+  set-time ; function for updates the time in the UI
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -452,7 +470,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 100
-10.0
+95.0
 1
 1
 %
@@ -482,7 +500,7 @@ number-of-immune-humans
 number-of-immune-humans
 0
 10
-2.0
+0.0
 1
 1
 NIL
@@ -508,7 +526,7 @@ number-of-shelters
 number-of-shelters
 0
 5
-1.0
+5.0
 1
 1
 NIL
@@ -523,7 +541,7 @@ rain-power
 rain-power
 0
 50
-50.0
+25.0
 1
 1
 NIL
@@ -596,6 +614,16 @@ Months
 1
 1
 11
+
+TEXTBOX
+304
+241
+454
+259
+NIL
+11
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -875,6 +903,23 @@ Circle -16777216 true false 30 30 240
 Circle -7500403 true true 60 60 180
 Circle -16777216 true false 90 90 120
 Circle -7500403 true true 120 120 60
+
+tile stones
+false
+0
+Polygon -7500403 true true 0 240 45 195 75 180 90 165 90 135 45 120 0 135
+Polygon -7500403 true true 300 240 285 210 270 180 270 150 300 135 300 225
+Polygon -7500403 true true 225 300 240 270 270 255 285 255 300 285 300 300
+Polygon -7500403 true true 0 285 30 300 0 300
+Polygon -7500403 true true 225 0 210 15 210 30 255 60 285 45 300 30 300 0
+Polygon -7500403 true true 0 30 30 0 0 0
+Polygon -7500403 true true 15 30 75 0 180 0 195 30 225 60 210 90 135 60 45 60
+Polygon -7500403 true true 0 105 30 105 75 120 105 105 90 75 45 75 0 60
+Polygon -7500403 true true 300 60 240 75 255 105 285 120 300 105
+Polygon -7500403 true true 120 75 120 105 105 135 105 165 165 150 240 150 255 135 240 105 210 105 180 90 150 75
+Polygon -7500403 true true 75 300 135 285 195 300
+Polygon -7500403 true true 30 285 75 285 120 270 150 270 150 210 90 195 60 210 15 255
+Polygon -7500403 true true 180 285 240 255 255 225 255 195 240 165 195 165 150 165 135 195 165 210 165 255
 
 tree
 false
