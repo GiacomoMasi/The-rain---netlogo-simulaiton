@@ -4,7 +4,7 @@ breed [immune-humans immune-humane]
 breed [shelters shelter]
 breed [trees tree]
 breed [clouds cloud]
-breed [stones stone]
+;breed [stones stone]
 
 
 
@@ -16,10 +16,11 @@ globals [
   create-one-human-flag
   random-patch
   tree-number
-  stone-number
+  ;stone-number
   rain-flag
   max-number-humans
   time
+  total-people
 ]
 
 
@@ -32,14 +33,15 @@ to setup ;setup function
   set current-humans-number number-of-humans
   set current-infected-humans-number number-of-infected-humans
   set die-threashold die-probability-infected-humans
-  set new-threashold new-probability-humans
+  set new-threashold probability-of-new-humans
   set create-one-human-flag false
   set tree-number 100
-  set stone-number 0
+  ;set stone-number 0
   set random-patch one-of turtles
   set rain-flag false
   set max-number-humans 150
   set time 0
+  set total-people (current-humans-number + current-infected-humans-number + number-of-immune-humans)
 
   let index 0
 
@@ -79,18 +81,18 @@ to setup ;setup function
 
   set index 0
 
-  while [index < stone-number]
-  [
+  ;while [index < stone-number]
+  ;[
 
-    create-stones 1 [
-      set color brown
-      set shape "tile stones"
-      set xcor random-xcor
-      set ycor random-ycor
-      set size 1
-    ]
-    set index (index + 1)
-  ]
+    ;create-stones 1 [
+      ;set color brown
+      ;set shape "tile stones"
+      ;set xcor random-xcor
+      ;set ycor random-ycor
+      ;set size 1
+    ;]
+    ;set index (index + 1)
+  ;]
 
   create-humans number-of-humans [
     set color blue
@@ -121,7 +123,7 @@ to create-rain
   [
 
     if rain-flag = false [
-      create-clouds rain-power [
+      create-clouds clouds-number [
         set shape "cloud"
         set xcor random-xcor
         set ycor random-ycor
@@ -144,6 +146,7 @@ to create-one-human ; create new human
   if ( (random-float 100) * 1.8 < (new-threashold / 2) )  [ ;check condition
     create-humans 1 [
       set current-humans-number ( current-humans-number + 1 )
+      set total-people (total-people + 1)
       set color blue
       set shape "person"
       set xcor random-xcor
@@ -172,7 +175,7 @@ to immune-humans-behaviour
 
 
       if distance closest-infected-human < 0.5 [
-        if (random-float 100) * 1.8 < (safe-threashold / 2 ) [ ; check condition
+        if (random-float 100) * 1.8 < (probability-immune-human-cure-infected-human / 2 ) [ ; check condition
           ask closest-infected-human [
             set breed humans
             set current-humans-number ( current-humans-number + 1 )
@@ -333,6 +336,7 @@ to infected-human-behaviour ; behaviour of infected humans
 
   if ( (random-float 100) * 1.8) < (die-threashold / 2) [ ; check condition
     set current-infected-humans-number ( current-infected-humans-number - 1)
+    set total-people ( total-people - 1 )
     die
   ]
 
@@ -470,7 +474,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 100
-95.0
+5.0
 1
 1
 %
@@ -479,13 +483,13 @@ HORIZONTAL
 SLIDER
 16
 243
-214
+231
 276
-new-probability-humans
-new-probability-humans
+probability-of-new-humans
+probability-of-new-humans
 0
 100
-30.0
+25.0
 1
 1
 %
@@ -537,11 +541,11 @@ SLIDER
 79
 436
 112
-rain-power
-rain-power
+clouds-number
+clouds-number
 0
 50
-25.0
+50.0
 1
 1
 NIL
@@ -550,10 +554,10 @@ HORIZONTAL
 SLIDER
 16
 289
-188
+347
 322
-safe-threashold
-safe-threashold
+probability-immune-human-cure-infected-human
+probability-immune-human-cure-infected-human
 0
 100
 10.0
@@ -624,6 +628,28 @@ NIL
 11
 0.0
 1
+
+MONITOR
+1013
+336
+1163
+381
+percentage non-infected
+(current-humans-number / total-people) * 100
+1
+1
+11
+
+MONITOR
+1181
+336
+1306
+381
+percentage infected
+(current-infected-humans-number / total-people) * 100
+1
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
