@@ -474,7 +474,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 100
-5.0
+20.0
 1
 1
 %
@@ -489,7 +489,7 @@ probability-of-new-humans
 probability-of-new-humans
 0
 100
-25.0
+100.0
 1
 1
 %
@@ -504,7 +504,7 @@ number-of-immune-humans
 number-of-immune-humans
 0
 10
-0.0
+4.0
 1
 1
 NIL
@@ -530,7 +530,7 @@ number-of-shelters
 number-of-shelters
 0
 5
-5.0
+1.0
 1
 1
 NIL
@@ -545,7 +545,7 @@ clouds-number
 clouds-number
 0
 50
-50.0
+10.0
 1
 1
 NIL
@@ -560,7 +560,7 @@ probability-immune-human-cure-infected-human
 probability-immune-human-cure-infected-human
 0
 100
-10.0
+20.0
 1
 1
 %
