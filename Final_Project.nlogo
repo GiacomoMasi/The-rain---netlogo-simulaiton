@@ -4,7 +4,6 @@ breed [immune-humans immune-humane]
 breed [shelters shelter]
 breed [trees tree]
 breed [clouds cloud]
-;breed [stones stone]
 
 
 
@@ -16,7 +15,6 @@ globals [
   create-one-human-flag
   random-patch
   tree-number
-  ;stone-number
   rain-flag
   max-number-humans
   time
@@ -36,7 +34,6 @@ to setup ;setup function
   set new-threashold probability-of-new-humans
   set create-one-human-flag false
   set tree-number 100
-  ;set stone-number 0
   set random-patch one-of turtles
   set rain-flag false
   set max-number-humans 150
@@ -78,21 +75,6 @@ to setup ;setup function
     ]
     set index (index + 1)
   ]
-
-  set index 0
-
-  ;while [index < stone-number]
-  ;[
-
-    ;create-stones 1 [
-      ;set color brown
-      ;set shape "tile stones"
-      ;set xcor random-xcor
-      ;set ycor random-ycor
-      ;set size 1
-    ;]
-    ;set index (index + 1)
-  ;]
 
   create-humans number-of-humans [
     set color blue
@@ -143,7 +125,8 @@ to create-rain
 end
 
 to create-one-human ; create new human
-  if ( (random-float 100) * 1.8 < (new-threashold / 2) )  [ ;check condition
+  ;if ( (random-float 100) * 1.8 < (new-threashold / 2) )  [ ;check condition
+  if(random-float 100 < new-threashold)[
     create-humans 1 [
       set current-humans-number ( current-humans-number + 1 )
       set total-people (total-people + 1)
@@ -474,7 +457,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 100
-20.0
+50.0
 1
 1
 %
@@ -489,7 +472,7 @@ probability-of-new-humans
 probability-of-new-humans
 0
 100
-100.0
+50.0
 1
 1
 %
@@ -504,7 +487,7 @@ number-of-immune-humans
 number-of-immune-humans
 0
 10
-4.0
+2.0
 1
 1
 NIL
@@ -530,7 +513,7 @@ number-of-shelters
 number-of-shelters
 0
 5
-1.0
+2.0
 1
 1
 NIL
@@ -545,7 +528,7 @@ clouds-number
 clouds-number
 0
 50
-10.0
+20.0
 1
 1
 NIL
@@ -560,7 +543,7 @@ probability-immune-human-cure-infected-human
 probability-immune-human-cure-infected-human
 0
 100
-20.0
+50.0
 1
 1
 %
@@ -635,7 +618,7 @@ MONITOR
 1163
 381
 percentage non-infected
-(current-humans-number / total-people) * 100
+(current-humans-number / (total-people - number-of-immune-humans) ) * 100
 1
 1
 11
@@ -646,7 +629,29 @@ MONITOR
 1306
 381
 percentage infected
-(current-infected-humans-number / total-people) * 100
+(current-infected-humans-number / (total-people - number-of-immune-humans)) * 100
+1
+1
+11
+
+MONITOR
+1013
+403
+1108
+448
+human number
+current-humans-number
+1
+1
+11
+
+MONITOR
+1163
+403
+1306
+448
+infected human number
+current-infected-humans-number
 1
 1
 11
