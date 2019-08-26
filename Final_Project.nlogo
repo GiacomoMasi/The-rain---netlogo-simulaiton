@@ -19,6 +19,8 @@ globals [
   max-number-humans
   time
   total-people
+  count-down
+  previous-count-down
 ]
 
 
@@ -39,6 +41,9 @@ to setup ;setup function
   set max-number-humans 150
   set time 0
   set total-people (current-humans-number + current-infected-humans-number + number-of-immune-humans)
+  set rain ( false)
+  set count-down 20
+  set previous-count-down 10
 
   let index 0
 
@@ -329,7 +334,26 @@ to set-time
   tick
   tick
   set time (time + 1)
+  set count-down (count-down - 1)
 end
+
+to check-count-down
+  if(count-down = 0)[
+    set rain (not rain)
+    ifelse(previous-count-down = 10)[
+    set previous-count-down 20
+    set count-down 10
+  ]
+  [
+    set previous-count-down 10
+    set count-down 20
+  ]
+  ]
+
+
+
+end
+
 
 to simulation
   move-humans ; function which describes moves of humans
@@ -338,6 +362,15 @@ to simulation
   check-create-human-flag ; function which checks if is the caso to create a new human or not
   create-rain ; switch button to regulates rain
   set-time ; function for updates the time in the UI
+  check-count-down
+
+  if time = 200[
+    stop
+  ]
+
+
+
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -457,7 +490,7 @@ die-probability-infected-humans
 die-probability-infected-humans
 0
 100
-50.0
+20.0
 1
 1
 %
@@ -472,7 +505,7 @@ probability-of-new-humans
 probability-of-new-humans
 0
 100
-50.0
+20.0
 1
 1
 %
@@ -500,7 +533,7 @@ SWITCH
 440
 rain
 rain
-1
+0
 1
 -1000
 
@@ -512,8 +545,8 @@ SLIDER
 number-of-shelters
 number-of-shelters
 0
-5
-2.0
+30
+7.0
 1
 1
 NIL
@@ -528,7 +561,7 @@ clouds-number
 clouds-number
 0
 50
-20.0
+10.0
 1
 1
 NIL
@@ -543,7 +576,7 @@ probability-immune-human-cure-infected-human
 probability-immune-human-cure-infected-human
 0
 100
-50.0
+5.0
 1
 1
 %
